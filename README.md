@@ -1,2 +1,2 @@
-# polar-pyspark
-Implementation of PySpark's Dataframe API in pola.rs
+# polarspark
+Experimental implementation of PySpark's Dataframe API in pola.rs
