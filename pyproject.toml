@@ -1,0 +1,41 @@
+[project]
+name = "polarspark"
+description = "Implementation of PySpark's Dataframe API in pola.rs"
+version = "0.0.1"
+authors = [
+    { name = "Paul Staab", email = "no@no.no" }
+]
+dependencies = [
+    "pyspark[sql]",
+    "polars",
+    "pandas"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pre-commit",
+    "mypy",
+    "pytest",
+]
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+target-version = ["py310", "py311"]
+
+[tool.mypy]
+disallow_any_unimported = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+check_untyped_defs = true
+show_error_codes = true
