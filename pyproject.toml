@@ -16,26 +16,22 @@ where = ["src"]
 
 [project.optional-dependencies]
 dev = [
-    "black",
     "pre-commit",
-    "mypy",
     "pytest",
-    "pandas-stubs",
 ]
 
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
 [tool.black]
-target-version = ["py311"]
+line-length = 100
+target-version = ["py310", "py311"]
 
 [tool.mypy]
-disallow_any_unimported = true
-no_implicit_optional = true
-strict_equality = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-warn_return_any = true
 check_untyped_defs = true
 show_error_codes = true

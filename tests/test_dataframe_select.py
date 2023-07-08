@@ -18,9 +18,7 @@ def test_select_columns() -> None:
     assert_df_transformation_equal(
         data, lambda df, f: df.select(f.col("a"), f.col("b").alias("d"), "c")
     )
-    assert_df_transformation_equal(
-        data, lambda df, f: df.select([f.col("a"), f.col("b"), "c"])
-    )
+    assert_df_transformation_equal(data, lambda df, f: df.select([f.col("a"), f.col("b"), "c"]))
     assert_df_transformation_equal(data, lambda df, _: df[["a", "b"]])
 
 
