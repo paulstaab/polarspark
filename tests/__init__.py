@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Union
 
 from pandas import DataFrame as PandasDF
 from pyspark.sql import DataFrame as SparkDF, SparkSession, functions as sparkfunc
@@ -11,7 +12,7 @@ from polarspark.sql import (
     functions as polarsparkfunc,
 )
 
-DataFrame = SparkDF | PolarsparkDF
+DataFrame = Union[SparkDF, PolarsparkDF]
 
 
 def assert_df_transformation_equal(

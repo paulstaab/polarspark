@@ -7,12 +7,15 @@ from polarspark.sql.column import Column
 
 
 class DataFrame:
-    __data: pl.LazyFrame | pl.DataFrame
+    __lazy_data: pl.LazyFrame
+    __collected_data: pl.DataFrame | None = None
 
     def __init__(self, data: pl.DataFrame | pl.LazyFrame) -> None:
         if isinstance(data, pl.DataFrame):
-            data = data.lazy()
-        self.__data = data
+            self.__collected_data = data
+            self.__lazy_data = data.lazy()
+        else:
+            self.__lazy_data = data
 
     def __getattr__(self, name: str) -> Column:
         return pl.col(name)
@@ -28,20 +31,25 @@ class DataFrame:
             return self.select(item)
         raise ValueError(f"Invalid value of type {type(item)} in DataFrame[ ]: {item}")
 
-    def _collect_data(self) -> pd.DataFrame:
-        if isinstance(self.__data, pl.LazyFrame):
-            self.__data = self.__data.collect()
-        assert isinstance(self.__data, pl.DataFrame)
-        return self.__data
+    @property
+    def _lazy_data(self) -> pl.LazyFrame:
+        return self.__lazy_data
+
+    @property
+    def _collected_data(self) -> pl.DataFrame:
+        if self.__collected_data is None:
+            self.__collected_data = self.__lazy_data.collect()
+            self.__lazy_data = self.__collected_data.lazy()
+        return self.__collected_data
 
     def count(self) -> int:
-        return self._collect_data().shape[0]
+        return self._collected_data.shape[0]
 
     @property
     def columns(self) -> list[str]:
-        return self.__data.columns
+        return self._lazy_data.columns
 
-    def select(self, *cols: Iterable[str | Column] | str | Column) -> Self:
+    def select(self, *cols: Iterable[str | Column] | str | Column) -> "DataFrame":
         cols_polars: list[pl.Expr] = []
         for col in cols:
             if isinstance(col, str) or isinstance(col, Column):
@@ -49,31 +57,31 @@ class DataFrame:
             else:
                 cols_polars.extend(col)
 
-        return DataFrame(self.__data.select(*cols_polars))
+        return DataFrame(self._lazy_data.select(*cols_polars))
 
-    def filter(self, condition: Column | str) -> Self:
+    def filter(self, condition: Column | str) -> "DataFrame":
         if isinstance(condition, Column):
-            return DataFrame(self.__data.filter(condition))
+            return DataFrame(self._lazy_data.filter(condition))
 
         elif isinstance(condition, str):
-            ctx = pl.SQLContext(df=self.__data)
+            ctx = pl.SQLContext(df=self._lazy_data)
             return DataFrame(ctx.execute(f"SELECT * FROM df WHERE {condition}"))
 
         else:
             raise ValueError(f"Invalid argument for df.filter: {condition}")
 
-    def where(self, condition: Column | str) -> Self:
+    def where(self, condition: Column | str) -> "DataFrame":
         return self.filter(condition)
 
-    def persist(self, *_args, **_kwargs) -> Self:
-        self.__data = self._collect_data().lazy()
+    def persist(self, *_args, **_kwargs) -> "DataFrame":
+        _ = self._collected_data
         return self
 
-    def cache(self) -> Self:
+    def cache(self) -> "DataFrame":
         return self.persist()
 
-    def localCheckpoint(self) -> Self:
-        return DataFrame(self._collect_data())
+    def localCheckpoint(self) -> "DataFrame":
+        return self.persist()
 
     def toPandas(self) -> pd.DataFrame:
-        return self._collect_data().to_pandas()
+        return self._collected_data.to_pandas()
