@@ -1,4 +1,4 @@
-from typing import Iterable, Self
+from typing import Iterable
 
 import polars as pl
 import pandas as pd
@@ -20,7 +20,7 @@ class DataFrame:
     def __getattr__(self, name: str) -> Column:
         return pl.col(name)
 
-    def __getitem__(self, item: int | str | Column | list | tuple) -> Column | Self:
+    def __getitem__(self, item: int | str | Column | list | tuple) -> Column | "DataFrame":
         if isinstance(item, int):
             return pl.col(self.columns[item])
         if isinstance(item, str):
@@ -82,30 +82,6 @@ class DataFrame:
 
     def localCheckpoint(self) -> "DataFrame":
         return self.persist()
-
-    def filter(self, condition: Column | str) -> Self:
-        if isinstance(condition, Column):
-            return DataFrame(self.__data.filter(condition))
-
-        elif isinstance(condition, str):
-            ctx = pl.SQLContext(df=self.__data)
-            return DataFrame(ctx.execute(f"SELECT * FROM df WHERE {condition}"))
-
-        else:
-            raise ValueError(f"Invalid argument for df.filter: {condition}")
-
-    def where(self, condition: Column | str) -> Self:
-        return self.filter(condition)
-
-    def persist(self, *_args, **_kwargs) -> Self:
-        self.__data = self._collect_data().lazy()
-        return self
-
-    def cache(self) -> Self:
-        return self.persist()
-
-    def localCheckpoint(self) -> Self:
-        return DataFrame(self._collect_data())
 
     def toPandas(self) -> pd.DataFrame:
         return self._collected_data.to_pandas()
