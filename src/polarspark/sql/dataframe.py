@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Union
 
 import polars as pl
 import pandas as pd
@@ -20,7 +20,7 @@ class DataFrame:
     def __getattr__(self, name: str) -> Column:
         return pl.col(name)
 
-    def __getitem__(self, item: int | str | Column | list | tuple) -> Column | "DataFrame":
+    def __getitem__(self, item: int | str | Column | list | tuple) -> Union[Column, "DataFrame"]:
         if isinstance(item, int):
             return pl.col(self.columns[item])
         if isinstance(item, str):
