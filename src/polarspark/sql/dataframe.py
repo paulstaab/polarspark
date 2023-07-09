@@ -1,9 +1,12 @@
-from typing import Iterable, Union
+from typing import Iterable, Union, TYPE_CHECKING
 
 import polars as pl
 import pandas as pd
 
 from polarspark.sql.column import Column
+
+if TYPE_CHECKING:
+    from polarspark.sql.group import GroupedData
 
 
 class DataFrame:
@@ -43,21 +46,14 @@ class DataFrame:
         return self.__collected_data
 
     def count(self) -> int:
-        return self._collected_data.shape[0]
+        return self._collected_data.height
 
     @property
     def columns(self) -> list[str]:
         return self._lazy_data.columns
 
     def select(self, *cols: Iterable[str | Column] | str | Column) -> "DataFrame":
-        cols_polars: list[pl.Expr] = []
-        for col in cols:
-            if isinstance(col, str) or isinstance(col, Column):
-                cols_polars.append(col)
-            else:
-                cols_polars.extend(col)
-
-        return DataFrame(self._lazy_data.select(*cols_polars))
+        return DataFrame(self._lazy_data.select(*cols))
 
     def filter(self, condition: Column | str) -> "DataFrame":
         if isinstance(condition, Column):
@@ -72,6 +68,14 @@ class DataFrame:
 
     def where(self, condition: Column | str) -> "DataFrame":
         return self.filter(condition)
+
+    def groupby(self, *cols: list[str | Column] | str | Column) -> "GroupedData":
+        from polarspark.sql.group import GroupedData
+
+        return GroupedData(self.__lazy_data.groupby(*cols))
+
+    def groupBy(self, *cols: list[str | Column] | str | Column) -> "GroupedData":
+        return self.groupby(*cols)
 
     def persist(self, *_args, **_kwargs) -> "DataFrame":
         _ = self._collected_data
