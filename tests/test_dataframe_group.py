@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from tests import assert_df_transformation_equal
 
@@ -58,5 +59,12 @@ def test_group_agg() -> None:
         data, lambda df, f: df.groupby(["b"]).agg(f.sum("a"), f.max("c"))
     )
     assert_df_transformation_equal(
-        data, lambda df, f: df.groupBy(df.a).agg({"b": "count", "c": "max"})
+        data, lambda df, f: df.groupBy(df.b).agg({"a": "sum", "c": "max"})
     )
+    assert_df_transformation_equal(
+        data, lambda df, f: df.groupBy(df.a).agg(f.sum(f.col("c") + 1).alias("sum_c_plus_1"))
+    )
+    with pytest.raises(NotImplementedError):
+        assert_df_transformation_equal(
+            data, lambda df, f: df.groupBy(df.a).agg(f.sum(f.col("c") + 1))
+        )
