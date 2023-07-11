@@ -89,3 +89,9 @@ class DataFrame:
 
     def toPandas(self) -> pd.DataFrame:
         return self._collected_data.to_pandas()
+
+    def withColumn(self, colName: str, col: Column) -> "DataFrame":
+        return DataFrame(self._lazy_data.with_columns(**{colName: col}))
+
+    def withColumns(self, colsMap: dict[str, Column]) -> "DataFrame":
+        return DataFrame(self._lazy_data.with_columns(**colsMap))
