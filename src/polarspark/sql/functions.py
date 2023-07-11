@@ -11,6 +11,13 @@ def column(col: str) -> Column:
     return pl.col(col)
 
 
+def lit(col: Column | str | int | float | bool | list) -> Column:
+    # ToDo: Test list
+    if is_column(col):
+        return col
+    return pl.lit(col)
+
+
 def _get_base_col_name(col: Column) -> str | None:
     """Return the name of the column for a column created with col or column.
 
@@ -29,13 +36,6 @@ def sum(col: str | Column) -> Column:
         return col.sum().alias(f"sum({col_name})")
 
     return col.sum()
-
-
-def lit(col: Column | str | int | float | bool | list) -> Column:
-    # ToDo: Test list
-    if is_column(col):
-        return col
-    return pl.lit(col)
 
 
 def max(col: str | Column) -> Column:
