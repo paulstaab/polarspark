@@ -1,6 +1,6 @@
 import polars as pl
 
-from polarspark.sql.column import Column
+from polarspark.sql.column import Column, is_column
 
 
 def col(col: str) -> Column:
@@ -20,6 +20,13 @@ def sum(col: str | Column) -> Column:
         return col.sum().alias(f"sum({col_name})")
 
     return col.sum()
+
+
+def lit(col: Column | str | int | float | bool | list) -> Column:
+    # ToDo: Test list
+    if is_column(col):
+        return col
+    return pl.lit(col)
 
 
 def max(col: str | Column) -> Column:
