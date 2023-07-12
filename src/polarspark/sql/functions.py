@@ -11,17 +11,6 @@ def column(col: str) -> Column:
     return pl.col(col)
 
 
-def sum(col: str | Column) -> Column:
-    if isinstance(col, str):
-        return column(col).sum().alias(f"sum({col})")
-
-    if str(col).startswith('col("'):
-        col_name = str(col)[5:-2]  # Get just the name without the col()
-        return col.sum().alias(f"sum({col_name})")
-
-    return col.sum()
-
-
 def lit(col: Column | str | int | float | bool | list) -> Column:
     # ToDo: Test list
     if is_column(col):
@@ -29,12 +18,31 @@ def lit(col: Column | str | int | float | bool | list) -> Column:
     return pl.lit(col)
 
 
+def _get_base_col_name(col: Column) -> str | None:
+    """Return the name of the column for a column created with col or column.
+
+    Returns None if the column is a more complex column.
+    """
+    if str(col).startswith('col("'):
+        return str(col)[5:-2]  # Get just the name without the col()
+    return None
+
+
+def sum(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).sum().alias(f"sum({col})")
+
+    if col_name := _get_base_col_name(col):
+        return col.sum().alias(f"sum({col_name})")
+
+    return col.sum()
+
+
 def max(col: str | Column) -> Column:
     if isinstance(col, str):
         return column(col).max().alias(f"max({col})")
 
-    if str(col).startswith('col("'):
-        col_name = str(col)[5:-2]  # Get just the name without the col()
-        return col.max().alias(f"max({col_name})")
+    if col_name := _get_base_col_name(col):
+        return col.sum().alias(f"max({col_name})")
 
     return col.max()
