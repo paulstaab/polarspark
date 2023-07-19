@@ -16,6 +16,18 @@ things.
 **Do not use this anyway near your production environment**.
 Write a proper re-implementation in pola.rs if you like the results.
 
+## Implementation Status
+
+| Feature | Status | Comment |
+| ------- | ------ | ------- |
+| DataFrame.select           | Done |
+| DataFrame.filter           | Done |
+| DataFrame.groupby().agg()  | Done | Only a few aggregration functions are implemented at the moment  |
+| DataFrame.withColumn       | Done |
+| DataFrame.join             | Partially | Only string argumnets for on are supported |
+| DataFrame.persist          | Partially | Caching to disk is not supported |
+| DataFrame.toPandas         | Done |
+
 
 ## Limitations
 - polarspark only supports the batch dataframe API. No Structured Streaming, MLlib, etc.
