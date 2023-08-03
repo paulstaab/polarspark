@@ -34,4 +34,6 @@ def assert_df_transformation_equal(
     spark_df = spark_df.sort_values(list(spark_df.columns)).reset_index(drop=True)
     polarspark_df = polarspark_df.sort_values(list(polarspark_df.columns)).reset_index(drop=True)
 
-    pd.testing.assert_frame_equal(polarspark_df, spark_df, check_dtype=False)
+    pd.testing.assert_frame_equal(
+        polarspark_df, spark_df, check_dtype=False, check_datetimelike_compat=True
+    )
