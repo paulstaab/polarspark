@@ -1,6 +1,7 @@
 from polarspark.sql import SparkSession
 from polarspark.sql.functions import col
 
+
 def test_readme_example():
     """
     Test that the example from the README file works.
