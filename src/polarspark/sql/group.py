@@ -1,9 +1,9 @@
 import polars as pl
-from polars.lazyframe.groupby import LazyGroupBy
+from polars.lazyframe.group_by import LazyGroupBy
 
-from polarspark.sql.dataframe import DataFrame
-from polarspark.sql.column import Column
 from polarspark.sql import functions
+from polarspark.sql.column import Column
+from polarspark.sql.dataframe import DataFrame
 
 
 class GroupedData:
@@ -14,19 +14,13 @@ class GroupedData:
         return DataFrame(self._group_by.count())
 
     def mean(self, *cols: str) -> DataFrame:
-        return DataFrame(self._group_by.agg(*[pl.avg(c).alias(f"avg({c})") for c in cols]))
+        return DataFrame(self._group_by.agg(*[pl.mean(c).alias(f"avg({c})") for c in cols]))
 
     def avg(self, *cols: str) -> DataFrame:
         return self.mean(*cols)
 
     def min(self, *cols: str) -> DataFrame:
         return DataFrame(self._group_by.agg(*[pl.min(c).alias(f"min({c})") for c in cols]))
-
-    def stddev(self, *cols: str) -> DataFrame:
-        return DataFrame(self._group_by.agg(*[pl.std(c).alias(f"stddev({c})") for c in cols]))
-
-    def variance(self, *cols: str) -> DataFrame:
-        return DataFrame(self._group_by.agg(*[pl.var(c).alias(f"variance({c})") for c in cols]))
 
     @staticmethod
     def _align_agg_col_name(col: Column) -> Column:

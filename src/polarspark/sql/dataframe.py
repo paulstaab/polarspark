@@ -1,11 +1,14 @@
-from typing import Iterable, Union, TYPE_CHECKING
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Union
 
-import polars as pl
 import pandas as pd
+import polars as pl
 
 from polarspark.sql.column import Column
 
 if TYPE_CHECKING:
+    from pyspark.sql import DataFrame as SparkDataFrame
+
     from polarspark.sql.group import GroupedData
 
 
@@ -72,7 +75,7 @@ class DataFrame:
     def groupby(self, *cols: list[str | Column] | str | Column) -> "GroupedData":
         from polarspark.sql.group import GroupedData
 
-        return GroupedData(self.__lazy_data.groupby(*cols))
+        return GroupedData(self.__lazy_data.group_by(*cols))
 
     def groupBy(self, *cols: list[str | Column] | str | Column) -> "GroupedData":
         return self.groupby(*cols)
@@ -88,7 +91,14 @@ class DataFrame:
         return self.persist()
 
     def toPandas(self) -> pd.DataFrame:
-        return self._collected_data.to_pandas()
+        return self._collected_data.to_pandas(use_pyarrow_extension_array=True)
+
+    def toSpark(self) -> "SparkDataFrame":
+        from pyspark.sql import SparkSession
+
+        spark = SparkSession.builder.getOrCreate()
+        spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+        return spark.createDataFrame(self._collected_data.to_pandas())
 
     def withColumn(self, colName: str, col: Column) -> "DataFrame":
         return DataFrame(self._lazy_data.with_columns(**{colName: col}))

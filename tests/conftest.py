@@ -1,6 +1,7 @@
-import pytest
+from datetime import date, datetime
+
 import pandas as pd
-from datetime import date
+import pytest
 
 
 @pytest.fixture
@@ -12,5 +13,6 @@ def test_data() -> pd.DataFrame:
             "c": [1, 1, 1, 2, 2, 2],
             "d": ["a", "b", "c", "d", "e", "f"],
             "e": [date(2023, 1, 1)] * 3 + [date.today()] * 3,
+            "f": [datetime(2023, 1, 1, 13, 14, 15)] * 3 + [datetime.now()] * 3,
         }
     )

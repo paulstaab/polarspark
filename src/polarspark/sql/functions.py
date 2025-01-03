@@ -90,9 +90,9 @@ def stddev(col: str | Column) -> Column:
 
 def variance(col: str | Column) -> Column:
     if isinstance(col, str):
-        return column(col).var().alias(f"variance({col})")
+        return column(col).var().alias(f"var_samp({col})")
 
     if col_name := _get_base_col_name(col):
-        return col.var().alias(f"variance({col_name})")
+        return col.var().alias(f"var_samp({col_name})")
 
     return col.var()
