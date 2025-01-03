@@ -127,4 +127,4 @@ class DataFrame:
         return DataFrame(joined_df)
 
     def show(self) -> None:
-        self._collected_data.show()
+        print(self._collected_data)
