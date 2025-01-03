@@ -129,3 +129,22 @@ class DataFrame:
     def show(self, n: int = 20, truncate: bool = True) -> None:
         data = self._collected_data.head(n)
         print(data)
+
+    def sort(self, *cols: Union[str, Column], ascending: Union[bool, list[bool]] = True) -> "DataFrame":
+        if isinstance(ascending, bool):
+            ascending = [ascending] * len(cols)
+        elif isinstance(ascending, list) and len(ascending) != len(cols):
+            raise ValueError("Length of ascending list must match the number of columns")
+
+        sort_exprs = []
+        for col, asc in zip(cols, ascending):
+            if isinstance(col, str):
+                col = pl.col(col)
+            if not asc:
+                col = col.desc()
+            sort_exprs.append(col)
+
+        return DataFrame(self._lazy_data.sort(*sort_exprs))
+
+    def orderBy(self, *cols: Union[str, Column], ascending: Union[bool, list[bool]] = True) -> "DataFrame":
+        return self.sort(*cols, ascending=ascending)

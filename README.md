@@ -27,6 +27,8 @@ Write a proper re-implementation in pola.rs if you like the results.
 | DataFrame.join             | Partially | Only string argumnets for on are supported |
 | DataFrame.persist          | Partially | Caching to disk is not supported |
 | DataFrame.toPandas         | Done |
+| DataFrame.sort             | Done |
+| DataFrame.orderBy          | Done |
 
 
 ## Limitations
@@ -57,7 +59,7 @@ Here are some examples of how to use the main features of the project:
 
 ```python
 from polarspark.sql import SparkSession
-from polarspark.sql.functions import col
+from polarspark.sql.functions import col, asc, desc
 
 # Create a SparkSession
 spark = SparkSession.builder.getOrCreate()
@@ -74,6 +76,10 @@ df.filter(col("id") > 1).show()
 
 # Group by and aggregate
 df.groupby("id").count().show()
+
+# Sort rows
+df.sort(asc("id")).show()
+df.sort(df.id.desc()).show()
 ```
 
 ## Contribution Guidelines

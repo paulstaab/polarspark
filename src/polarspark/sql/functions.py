@@ -96,3 +96,15 @@ def variance(col: str | Column) -> Column:
         return col.var().alias(f"var_samp({col_name})")
 
     return col.var()
+
+
+def asc(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).asc()
+    return col.asc()
+
+
+def desc(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).desc()
+    return col.desc()
