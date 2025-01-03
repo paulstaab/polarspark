@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v3
@@ -28,6 +28,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install -e .[dev]
+    - name: Install distutils for Python 3.12
+      if: matrix.python-version == '3.12'
+      run: sudo apt-get install python3-distutils
     - name: Check with pre-commit
       uses: pre-commit/action@v3.0.0
     - name: Test with pytest
