@@ -42,3 +42,57 @@ Write a proper re-implementation in pola.rs if you like the results.
   polarspark will try to set the PySpark names in simple cases like the one above,
   but will fail with a `NotImplementedError` for more complex cases like
   ´df.agg(f.sum(f.col("x") + 1))´. You need to set an alias in this case.
+
+## Installation
+
+To install the package and its dependencies, clone the repo and run the following command:
+
+```bash
+pip install .
+```
+
+## Usage
+
+Here are some examples of how to use the main features of the project:
+
+```python
+from polarspark.sql import SparkSession
+from polarspark.sql.functions import col
+
+# Create a SparkSession
+spark = SparkSession.builder.getOrCreate()
+
+# Create a DataFrame
+data = [(1, "Alice"), (2, "Bob"), (3, "Cathy")]
+df = spark.createDataFrame(data, schema=["id", "name"])
+
+# Select columns
+df.select("id", "name").show()
+
+# Filter rows
+df.filter(col("id") > 1).show()
+
+# Group by and aggregate
+df.groupby("id").count().show()
+```
+
+## Contribution Guidelines
+
+We welcome contributions to the project! To contribute, please follow these steps:
+
+1. Fork the repository
+2. Create a new branch for your feature or bugfix
+3. Make your changes
+4. Submit a pull request with a clear description of your changes
+
+## Testing
+
+This project uses `pytest` as the testing framework. To run the tests, use the following command:
+
+```bash
+pytest
+```
+
+## License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for more information.
