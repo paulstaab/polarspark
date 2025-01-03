@@ -125,3 +125,7 @@ class DataFrame:
         # potential bug in polars: Why do we need the collect here?
         joined_df = joined_df.collect().select(*on, *cols_left, *cols_right)
         return DataFrame(joined_df)
+
+    def show(self, n: int = 20, truncate: bool = True) -> None:
+        data = self._collected_data.head(n)
+        print(data)
