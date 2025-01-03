@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Union
 import pandas as pd
 import polars as pl
 
+from polarspark.sql import functions as f
 from polarspark.sql.column import Column
 
 if TYPE_CHECKING:
@@ -24,13 +25,13 @@ class DataFrame:
             self.__lazy_data = data
 
     def __getattr__(self, name: str) -> Column:
-        return pl.col(name)
+        return Column(pl.col(name))
 
     def __getitem__(self, item: int | str | Column | list | tuple) -> Union[Column, "DataFrame"]:
         if isinstance(item, int):
-            return pl.col(self.columns[item])
+            return Column(pl.col(self.columns[item]))
         if isinstance(item, str):
-            return pl.col(item)
+            return Column(pl.col(item))
         if isinstance(item, Column):
             return self.filter(item)
         if isinstance(item, list) or isinstance(item, tuple):
@@ -56,11 +57,13 @@ class DataFrame:
         return self._lazy_data.columns
 
     def select(self, *cols: Iterable[str | Column] | str | Column) -> "DataFrame":
-        return DataFrame(self._lazy_data.select(*cols))
+        if len(cols) == 1 and not (isinstance(cols[0], str) or isinstance(cols[0], Column)):
+            cols = list(cols[0])
+        return DataFrame(self._lazy_data.select(*[f.col(c).expr for c in cols]))  # type: ignore
 
     def filter(self, condition: Column | str) -> "DataFrame":
         if isinstance(condition, Column):
-            return DataFrame(self._lazy_data.filter(condition))
+            return DataFrame(self._lazy_data.filter(condition.expr))
 
         elif isinstance(condition, str):
             ctx = pl.SQLContext(df=self._lazy_data)
@@ -129,3 +132,27 @@ class DataFrame:
     def show(self, n: int = 20, truncate: bool = True) -> None:
         data = self._collected_data.head(n)
         print(data)
+
+    def sort(
+        self, *cols: str | Column | list[str | Column], ascending: bool | list[bool] | None = None
+    ) -> "DataFrame":
+        if len(cols) == 1 and isinstance(cols[0], list):
+            cols = [f.col(col) for col in cols[0]]
+        else:
+            cols = [f.col(col) for col in cols]
+
+        if ascending is None:
+            ascending = [col.sort_ascending for col in cols]
+        if isinstance(ascending, bool):
+            ascending = [ascending] * len(cols)
+        elif isinstance(ascending, list) and len(ascending) != len(cols):
+            raise ValueError("Length of ascending list must match the number of columns")
+
+        return DataFrame(
+            self._lazy_data.sort(
+                by=[c.expr for c in cols], descending=[not asc for asc in ascending]
+            )
+        )
+
+    def orderBy(self, *cols: str | Column, ascending: bool | list[bool] = True) -> "DataFrame":
+        return self.sort(*cols, ascending=ascending)
