@@ -27,6 +27,7 @@ build-backend = "setuptools.build_meta"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+select = ["I", "E", "F" , "W" , "C", "UP"]
 
 [tool.mypy]
 check_untyped_defs = true

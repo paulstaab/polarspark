@@ -1,4 +1,5 @@
 from typing import Any
+
 from polars import Expr as Column  # noqa
 
 

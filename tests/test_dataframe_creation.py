@@ -1,16 +1,11 @@
 import pandas as pd
 
 from polarspark.sql import SparkSession
+from tests import assert_df_transformation_equal
 
 
-def test_create_dataframe_from_pandas(test_data: pd.DataFrame):
-    # given
-    spark = SparkSession.builder.getOrCreate()
-    # when
-    df = spark.createDataFrame(test_data)
-    # then
-    assert df.count() == len(test_data)
-    assert df.columns == list(test_data.columns)
+def test_create_dataframe_from_pandas(test_data: pd.DataFrame) -> None:
+    assert_df_transformation_equal(test_data, lambda df, _: df)
 
 
 def test_create_from_list():

@@ -5,7 +5,7 @@ from tests import assert_df_transformation_equal
 
 def test_with_column(test_data: pd.DataFrame) -> None:
     assert_df_transformation_equal(test_data, lambda df, f: df.withColumn("dd", f.lit(5)))
-    assert_df_transformation_equal(test_data, lambda df, f: df.withColumn("cc", f.lit(None)))
+    assert_df_transformation_equal(test_data, lambda df, f: df.withColumn("cc", f.lit("cc")))
     assert_df_transformation_equal(
         test_data, lambda df, f: df.withColumn("ee", f.lit("a").alias("aa"))
     )

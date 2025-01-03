@@ -6,4 +6,11 @@
 	},
 	"forwardPorts": [4040],
 	"postCreateCommand": "pip install -e .[dev]",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot"
+			]
+		}
+	},
 }

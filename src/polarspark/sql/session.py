@@ -18,6 +18,6 @@ class SparkSession:
             return DataFrame(pl.from_pandas(data=data))
 
         if isinstance(data, list):
-            return DataFrame(pl.from_records(data, schema))
+            return DataFrame(pl.from_records(data, schema, orient="row"))
 
         raise ValueError(f"Invalid data format: {type(data)}")
