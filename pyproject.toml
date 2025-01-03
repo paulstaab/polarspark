@@ -10,6 +10,7 @@ dependencies = [
     "polars",
     "pandas"
 ]
+requires-python = ">=3.10, <4.0"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -26,7 +27,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py312"
 select = ["I", "E", "F" , "W" , "C", "UP"]
 
 [tool.mypy]
