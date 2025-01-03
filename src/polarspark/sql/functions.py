@@ -46,3 +46,53 @@ def max(col: str | Column) -> Column:
         return col.sum().alias(f"max({col_name})")
 
     return col.max()
+
+
+def min(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).min().alias(f"min({col})")
+
+    if col_name := _get_base_col_name(col):
+        return col.min().alias(f"min({col_name})")
+
+    return col.min()
+
+
+def avg(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).mean().alias(f"avg({col})")
+
+    if col_name := _get_base_col_name(col):
+        return col.mean().alias(f"avg({col_name})")
+
+    return col.mean()
+
+
+def count(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).count().alias(f"count({col})")
+
+    if col_name := _get_base_col_name(col):
+        return col.count().alias(f"count({col_name})")
+
+    return col.count()
+
+
+def stddev(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).std().alias(f"stddev({col})")
+
+    if col_name := _get_base_col_name(col):
+        return col.std().alias(f"stddev({col_name})")
+
+    return col.std()
+
+
+def variance(col: str | Column) -> Column:
+    if isinstance(col, str):
+        return column(col).var().alias(f"variance({col})")
+
+    if col_name := _get_base_col_name(col):
+        return col.var().alias(f"variance({col_name})")
+
+    return col.var()
