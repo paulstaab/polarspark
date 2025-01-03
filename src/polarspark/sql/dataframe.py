@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Union
 import pandas as pd
 import polars as pl
 
+from polarspark.sql import functions as f
 from polarspark.sql.column import Column
 
 if TYPE_CHECKING:
@@ -130,21 +131,22 @@ class DataFrame:
         data = self._collected_data.head(n)
         print(data)
 
-    def sort(self, *cols: Union[str, Column], ascending: Union[bool, list[bool]] = True) -> "DataFrame":
+    def sort(
+        self, *cols: str | Column | list[str | Column], ascending: bool | list[bool] | None = None
+    ) -> "DataFrame":
+        if len(cols) == 1 and isinstance(cols[0], list):
+            cols = [f.col(col) for col in cols[0]]
+        else:
+            cols = [f.col(col) for col in cols]
+
+        if ascending is None:
+            ascending = [col.sort_ascending for col in cols]
         if isinstance(ascending, bool):
             ascending = [ascending] * len(cols)
         elif isinstance(ascending, list) and len(ascending) != len(cols):
             raise ValueError("Length of ascending list must match the number of columns")
 
-        sort_exprs = []
-        for col, asc in zip(cols, ascending):
-            if isinstance(col, str):
-                col = pl.col(col)
-            if not asc:
-                col = col.desc()
-            sort_exprs.append(col)
+        return DataFrame(self._lazy_data.sort(cols, descending=[not asc for asc in ascending]))
 
-        return DataFrame(self._lazy_data.sort(*sort_exprs))
-
-    def orderBy(self, *cols: Union[str, Column], ascending: Union[bool, list[bool]] = True) -> "DataFrame":
+    def orderBy(self, *cols: str | Column, ascending: bool | list[bool] = True) -> "DataFrame":
         return self.sort(*cols, ascending=ascending)
