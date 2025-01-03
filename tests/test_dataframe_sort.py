@@ -8,7 +8,7 @@ def test_sort_single_column(test_data: pd.DataFrame) -> None:
     assert_df_transformation_equal(test_data, lambda df, f: df.sort("a", ascending=False))
     assert_df_transformation_equal(test_data, lambda df, f: df.sort(f.col("a"), ascending=False))
     assert_df_transformation_equal(test_data, lambda df, f: df.sort(f.asc("a")))
-    # assert_df_transformation_equal(test_data, lambda df, f: df.sort(f.desc("a")))
+    assert_df_transformation_equal(test_data, lambda df, f: df.sort(f.desc("a")))
 
 
 def test_sort_multiple_columns(test_data: pd.DataFrame) -> None:
@@ -17,7 +17,7 @@ def test_sort_multiple_columns(test_data: pd.DataFrame) -> None:
     assert_df_transformation_equal(
         test_data, lambda df, f: df.sort(["a", "b"], ascending=[True, False])
     )
-    # assert_df_transformation_equal(test_data, lambda df, f: df.sort(f.asc("a"), f.desc("b")))
+    assert_df_transformation_equal(test_data, lambda df, f: df.sort(f.asc("a"), f.desc("b")))
 
 
 def test_orderBy_single_column(test_data: pd.DataFrame) -> None:

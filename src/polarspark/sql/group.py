@@ -11,7 +11,7 @@ class GroupedData:
         self._group_by = group_by
 
     def count(self) -> DataFrame:
-        return DataFrame(self._group_by.count())
+        return DataFrame(self._group_by.len())
 
     def mean(self, *cols: str) -> DataFrame:
         return DataFrame(self._group_by.agg(*[pl.mean(c).alias(f"avg({c})") for c in cols]))

@@ -3,6 +3,12 @@ import pandas as pd
 from tests import assert_df_transformation_equal
 
 
+def test_sum_function(test_data: pd.DataFrame) -> None:
+    assert_df_transformation_equal(test_data, lambda df, f: df.select(f.sum("a")))
+    assert_df_transformation_equal(test_data, lambda df, f: df.select(f.sum("b")))
+    assert_df_transformation_equal(test_data, lambda df, f: df.select(f.sum("c")))
+
+
 def test_min_function(test_data: pd.DataFrame) -> None:
     assert_df_transformation_equal(test_data, lambda df, f: df.select(f.min("a")))
     assert_df_transformation_equal(test_data, lambda df, f: df.select(f.min("b")))
